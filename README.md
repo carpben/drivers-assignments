@@ -17,8 +17,9 @@ This is a json based persistent data manged from the client. Managing data in su
 
 ## Known Issues
 
+-  App is not mobile friendly. It displays well in screens wider than 1400px.
+-  The entire App rerenders on every selection. For a bigger list it might cause performance issue and rendering optimization will be required.
 -  I use inline css in js in nested components. This is debatable.
--  App is not mobile friendly
 
 ## Full discolusre
 
