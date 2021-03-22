@@ -14,6 +14,11 @@ This is a json based persistent data manged from the client. Managing data in su
 
 **To view experience of multiple users open the browser in to separate windows**
 
+## Known Issues
+
+-  I use inline css in js in nested components. This is debatable.
+-  App is not mobile friendly
+
 ## Full discolusre
 
 I consulted another programmer about the firebase database.
