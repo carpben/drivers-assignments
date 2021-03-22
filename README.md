@@ -12,7 +12,7 @@ This is a json based persistent data manged from the client. Managing data in su
 1. As far as I know there is no easy way to query the data.
 2. Data is managed from the client. No separation of concerns. Also might less safe under certain circumstances.
 
-**To view experience of multiple users open the browser in to separate windows**
+**To view experience of multiple users open the app in two separate windows**
 
 ## Known Issues
 
