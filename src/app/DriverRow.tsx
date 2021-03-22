@@ -1,6 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from "@emotion/react"
-import { stopAllPropagation } from "../general/dom"
 import { DRFC } from "../general/types"
 
 interface Props {
@@ -16,6 +14,7 @@ const DriverRow: DRFC<Props> = (props) => {
 			css={{
 				display: "flex",
 			}}
+			{...otherProps}
 		>
 			<div
 				css={{

@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { css, jsx } from "@emotion/react"
-import { useEffect, useState } from "react"
+import { css } from "@emotion/react"
+import { useEffect } from "react"
 import { useImmer } from "use-immer"
 import { getArr } from "../general/array"
 import { Button } from "../general/Button"
-import { useMountEffect, useUpdateEffect } from "../general/lifecycles"
+import { useMountEffect } from "../general/lifecycles"
 import { DRFC } from "../general/types"
 import { driversMap } from "./data/driversMap"
 import { assignedLiveData } from "./data/liveData"
@@ -37,7 +37,7 @@ const App: DRFC<Props> = () => {
 				setSelection(initialSelection)
 			}, 1100)
 		}
-	}, [selection.driver, selection.task])
+	})
 
 	useMountEffect(() => {
 		assignedLiveData.get().then((initialAssigned) => {

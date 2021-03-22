@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from "@emotion/react"
 import { faCheck, faQuestion } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useUpdateEffect } from "../general/lifecycles"
 import { styleCenterSingleChild } from "../general/style"
 import { DRFC } from "../general/types"

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, Interpolation, jsx, Theme } from "@emotion/react"
+import { css, Interpolation, Theme } from "@emotion/react"
 import { styleInputNormalize } from "./style"
 import { DRFC } from "./types"
 

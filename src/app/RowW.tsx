@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { jsx } from "@emotion/react"
 import { stopAllPropagation } from "../general/dom"
 import { getShadow } from "../general/style"
 import { DRFC } from "../general/types"
