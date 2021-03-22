@@ -31,6 +31,7 @@ const RowW: DRFC<Props> = (props) => {
 						backgroundColor: justChangedDecoration ? "blue" : "white",
 					},
 				},
+
 				styleMode === ROW_STYLE_MODE.HEIGHLIGHT
 					? [
 							getShadow(2, 1),
@@ -44,6 +45,7 @@ const RowW: DRFC<Props> = (props) => {
 							filter: "blur(5px)",
 					  }
 					: undefined,
+
 				justChangedDecoration
 					? {
 							backgroundColor: "blue",

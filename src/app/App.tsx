@@ -54,36 +54,15 @@ const App: DRFC<Props> = () => {
 	}
 
 	return (
-		<div
-			css={{
-				display: "flex",
-
-				padding: 40,
-				backgroundColor: "#ddd",
-				alignItems: "baseline",
-			}}
-			onClick={() => setSelection((draftSt) => ({}))}
-		>
-			<TableW
-				css={{
-					flexBasis: 450,
-					marginRight: 100,
-					flexGrow: 1,
-				}}
-				heighlight={Boolean(selection.task && !selection.driver)}
-			>
-				<RowW>
-					<DriverRow
-						name="Name"
-						id="ID"
-						css={{
-							fontWeight: 600,
-						}}
-					/>
+		<div css={styleContainer} onClick={() => setSelection((draftSt) => ({}))}>
+			<TableW css={styleDriverTable} heighlight={Boolean(selection.task && !selection.driver)}>
+				<RowW css={styleTableHeader}>
+					<DriverRow name="Name" id="ID" />
 				</RowW>
 
 				{drivers.map((driver) => {
 					const selected = driver.id === selection.driver
+
 					return (
 						<RowW
 							key={driver.id}
@@ -92,7 +71,6 @@ const App: DRFC<Props> = () => {
 									draftSt.driver = driver.id
 								})
 							}
-							css={styleRowData}
 							styleMode={
 								selected
 									? ROW_STYLE_MODE.HEIGHLIGHT
@@ -107,27 +85,20 @@ const App: DRFC<Props> = () => {
 				})}
 			</TableW>
 
-			<div
-				css={{
-					flexBasis: 1050,
-					flexGrow: 2,
-				}}
-			>
+			<div css={styleTasksSection}>
 				<TableW heighlight={Boolean(!selection.task && selection.driver)}>
 					<TaskRow
 						driver="Driver"
 						taskId="TaskId"
 						subTasks={getArr(7, (i) => `Day ${i + 1}`)}
-						css={{
-							fontWeight: 600,
-						}}
+						css={styleTableHeader}
 					/>
 
 					{tasks.map((task) => {
 						const selected = selection.task === task.lineId
+
 						return (
 							<TaskRow
-								css={styleRowData}
 								handler={() =>
 									setSelection((draftSt) => {
 										draftSt.task = task.lineId
@@ -149,16 +120,7 @@ const App: DRFC<Props> = () => {
 					})}
 				</TableW>
 
-				<Button
-					css={{
-						marginTop: 20,
-						padding: "14px 6px",
-						border: "1px solid #aaa",
-						backgroundColor: "#888",
-						borderRadius: 3,
-					}}
-					handler={() => setAssigned({})}
-				>
+				<Button css={styleResetButton} handler={() => setAssigned({})}>
 					Reset Assignments
 				</Button>
 			</div>
@@ -166,10 +128,36 @@ const App: DRFC<Props> = () => {
 	)
 }
 
-const styleRowData = css({
+const styleTableHeader = css({
+	fontWeight: 600,
 	":hover": {
-		backgroundColor: "white",
+		backgroundColor: "unset",
 	},
+})
+
+const styleContainer = css({
+	display: "flex",
+	padding: 40,
+	alignItems: "baseline",
+})
+
+const styleDriverTable = css({
+	flexBasis: 450,
+	marginRight: 100,
+	flexGrow: 1,
+})
+
+const styleTasksSection = css({
+	flexBasis: 1050,
+	flexGrow: 2,
+})
+
+const styleResetButton = css({
+	marginTop: 20,
+	padding: "14px 6px",
+	border: "1px solid #aaa",
+	backgroundColor: "#888",
+	borderRadius: 3,
 })
 
 export default App

@@ -32,6 +32,14 @@ const DriverRow: DRFC<Props> = (props) => {
 			>
 				{id}
 			</div>
+			<div
+				css={{
+					flexBasis: "5%",
+					flexShrink: 0,
+				}}
+			>
+				{id}
+			</div>
 		</div>
 	)
 }
