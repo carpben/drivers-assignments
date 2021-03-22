@@ -155,11 +155,12 @@ const styleContainer = css({
 	display: "flex",
 	padding: 40,
 	alignItems: "baseline",
+	fontSize: 15,
 })
 
 const styleDriverTable = css({
 	flexBasis: 500,
-	marginRight: 100,
+	marginRight: 75,
 	flexGrow: 1,
 })
 
