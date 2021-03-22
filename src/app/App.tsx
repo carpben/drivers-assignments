@@ -13,7 +13,7 @@ import tasks from "./data/ops-Exercise-tasks.json"
 import DriverRow from "./DriverRow"
 import RowW, { ROW_STYLE_MODE } from "./RowW"
 import TableW from "./TableW"
-import TaskRow from "./TaskRow"
+import TaskRow, { TASK_ROW_MODE } from "./TaskRow"
 
 interface Props {}
 
@@ -53,9 +53,12 @@ const App: DRFC<Props> = () => {
 		return null
 	}
 
+	const driversHeighlighted = Boolean(selection.task && !selection.driver)
+	const tasksHeighlighted = Boolean(!selection.task && selection.driver)
+
 	return (
 		<div css={styleContainer} onClick={() => setSelection((draftSt) => ({}))}>
-			<TableW css={styleDriverTable} heighlight={Boolean(selection.task && !selection.driver)}>
+			<TableW css={styleDriverTable} heighlight={driversHeighlighted}>
 				<RowW css={styleTableHeader}>
 					<DriverRow name="Name" id="ID" />
 				</RowW>
@@ -66,10 +69,13 @@ const App: DRFC<Props> = () => {
 					return (
 						<RowW
 							key={driver.id}
-							handler={() =>
-								setSelection((draftSt) => {
-									draftSt.driver = driver.id
-								})
+							handler={
+								driversHeighlighted
+									? () =>
+											setSelection((draftSt) => {
+												draftSt.driver = driver.id
+											})
+									: undefined
 							}
 							styleMode={
 								selected
@@ -79,19 +85,28 @@ const App: DRFC<Props> = () => {
 									: undefined
 							}
 						>
-							<DriverRow {...driver} />
+							<DriverRow
+								{...driver}
+								select={() => {
+									console.log("hhh")
+									setSelection((draftSt) => {
+										draftSt.driver = driver.id
+									})
+								}}
+							/>
 						</RowW>
 					)
 				})}
 			</TableW>
 
 			<div css={styleTasksSection}>
-				<TableW heighlight={Boolean(!selection.task && selection.driver)}>
+				<TableW heighlight={tasksHeighlighted}>
 					<TaskRow
 						driver="Driver"
 						taskId="TaskId"
 						subTasks={getArr(7, (i) => `Day ${i + 1}`)}
 						css={styleTableHeader}
+						mode={TASK_ROW_MODE.HEADER}
 					/>
 
 					{tasks.map((task) => {
@@ -115,12 +130,13 @@ const App: DRFC<Props> = () => {
 								driver={driversMap[assigned[task.lineId]]?.name}
 								taskId={task.lineDisplayId}
 								subTasks={task.tasks.map((subTask) => subTask.type)}
+								mode={tasksHeighlighted ? TASK_ROW_MODE.ROW_CLICKABLE : TASK_ROW_MODE.NONE}
 							/>
 						)
 					})}
 				</TableW>
 
-				<Button css={styleResetButton} handler={() => setAssigned({})}>
+				<Button css={styleResetButton} handler={() => assignedLiveData.set({})}>
 					Reset Assignments
 				</Button>
 			</div>
@@ -142,7 +158,7 @@ const styleContainer = css({
 })
 
 const styleDriverTable = css({
-	flexBasis: 450,
+	flexBasis: 500,
 	marginRight: 100,
 	flexGrow: 1,
 })

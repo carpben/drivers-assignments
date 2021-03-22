@@ -1,13 +1,18 @@
 /** @jsxImportSource @emotion/react */
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Button } from "../general/Button"
+import { styleCenterSingleChild } from "../general/style"
 import { DRFC } from "../general/types"
 
 interface Props {
 	name: string
 	id: string
+	select?: () => unknown
 }
 
 const DriverRow: DRFC<Props> = (props) => {
-	const { name, id, ...otherProps } = props
+	const { name, id, select, ...otherProps } = props
 
 	return (
 		<div
@@ -18,7 +23,7 @@ const DriverRow: DRFC<Props> = (props) => {
 		>
 			<div
 				css={{
-					flexBasis: "45%",
+					flexBasis: "40%",
 					flexShrink: 0,
 				}}
 			>
@@ -26,7 +31,7 @@ const DriverRow: DRFC<Props> = (props) => {
 			</div>
 			<div
 				css={{
-					flexBasis: "55%",
+					flexBasis: "50%",
 					flexShrink: 0,
 				}}
 			>
@@ -34,11 +39,23 @@ const DriverRow: DRFC<Props> = (props) => {
 			</div>
 			<div
 				css={{
-					flexBasis: "5%",
+					flexBasis: "10%",
 					flexShrink: 0,
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "flex-end",
 				}}
 			>
-				{id}
+				{select && (
+					<Button
+						css={{
+							color: "#777",
+						}}
+						handler={select}
+					>
+						<FontAwesomeIcon icon={faPlus} />
+					</Button>
+				)}
 			</div>
 		</div>
 	)

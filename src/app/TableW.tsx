@@ -20,7 +20,7 @@ const TableW: DRFC<Props> = (props) => {
 					? [
 							getShadow(3, 0.7),
 							{
-								backgroundColor: "white",
+								backgroundColor: "#f8f8f8",
 							},
 					  ]
 					: undefined,
