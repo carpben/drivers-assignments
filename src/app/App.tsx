@@ -3,8 +3,11 @@ import { css, jsx } from "@emotion/react"
 import { useEffect, useState } from "react"
 import { useImmer } from "use-immer"
 import { getArr } from "../general/array"
-import { getShadow } from "../general/style"
+import { Button } from "../general/Button"
+import { useMountEffect, useUpdateEffect } from "../general/lifecycles"
 import { DRFC } from "../general/types"
+import { driversMap } from "./data/driversMap"
+import { assignedLiveData } from "./data/liveData"
 import drivers from "./data/ops-Exercise-drivers.json"
 import tasks from "./data/ops-Exercise-tasks.json"
 import DriverRow from "./DriverRow"
@@ -14,40 +17,41 @@ import TaskRow from "./TaskRow"
 
 interface Props {}
 
-// const initState = {
-//   assigned: {},
-//   selected: {
-//     driver: undefined,
-//     task: undefined
-//   }
-// }
-const driversMap = drivers.reduce((accum, driver) => {
-	accum[driver.id] = driver
-	return accum
-}, {} as Record<string, typeof drivers[number]>)
-
 const initialSelection = {
 	driver: undefined as string | undefined,
 	task: undefined as string | undefined,
 }
 
 const App: DRFC<Props> = () => {
-	const [assigned, setAssigned] = useImmer({} as Record<string, string>)
+	const [assigned, setAssigned] = useImmer(null as null | Record<string, string>)
 	const [selection, setSelection] = useImmer(initialSelection)
 
 	useEffect(() => {
 		if (selection.driver && selection.task) {
-			setAssigned((draftSt) => {
-				draftSt[selection.task!] = selection.driver!
+			assignedLiveData.set({
+				...assigned,
+				[selection.task]: selection.driver,
 			})
 
-			const timeout = setTimeout(() => {
+			setTimeout(() => {
 				setSelection(initialSelection)
-			}, 1500)
+			}, 1100)
 		}
 	}, [selection.driver, selection.task])
 
-	const selectionJustMade = Boolean(selection.task && selection.driver)
+	useMountEffect(() => {
+		assignedLiveData.get().then((initialAssigned) => {
+			setAssigned(initialAssigned)
+		})
+
+		assignedLiveData.on((newAssigned) => {
+			setAssigned(newAssigned)
+		})
+	})
+
+	if (!assigned) {
+		return null
+	}
 
 	return (
 		<div
@@ -62,8 +66,9 @@ const App: DRFC<Props> = () => {
 		>
 			<TableW
 				css={{
-					flexBasis: 500,
+					flexBasis: 450,
 					marginRight: 100,
+					flexGrow: 1,
 				}}
 				heighlight={Boolean(selection.task && !selection.driver)}
 			>
@@ -102,15 +107,13 @@ const App: DRFC<Props> = () => {
 				})}
 			</TableW>
 
-			<TableW
-				css={[
-					{
-						flexBasis: 1000,
-					},
-				]}
-				heighlight={Boolean(!selection.task && selection.driver)}
+			<div
+				css={{
+					flexBasis: 1050,
+					flexGrow: 2,
+				}}
 			>
-				<RowW>
+				<TableW heighlight={Boolean(!selection.task && selection.driver)}>
 					<TaskRow
 						driver="Driver"
 						taskId="TaskId"
@@ -119,35 +122,46 @@ const App: DRFC<Props> = () => {
 							fontWeight: 600,
 						}}
 					/>
-				</RowW>
 
-				{tasks.map((task) => {
-					const selected = selection.task === task.lineId
-					return (
-						<RowW
-							css={styleRowData}
-							handler={() =>
-								setSelection((draftSt) => {
-									draftSt.task = task.lineId
-								})
-							}
-							styleMode={
-								selected
-									? ROW_STYLE_MODE.HEIGHLIGHT
-									: selection.task
-									? ROW_STYLE_MODE.BLUR
-									: undefined
-							}
-						>
+					{tasks.map((task) => {
+						const selected = selection.task === task.lineId
+						return (
 							<TaskRow
+								css={styleRowData}
+								handler={() =>
+									setSelection((draftSt) => {
+										draftSt.task = task.lineId
+									})
+								}
+								styleMode={
+									selected
+										? ROW_STYLE_MODE.HEIGHLIGHT
+										: selection.task
+										? ROW_STYLE_MODE.BLUR
+										: undefined
+								}
+								key={task.lineId}
 								driver={driversMap[assigned[task.lineId]]?.name}
 								taskId={task.lineDisplayId}
 								subTasks={task.tasks.map((subTask) => subTask.type)}
 							/>
-						</RowW>
-					)
-				})}
-			</TableW>
+						)
+					})}
+				</TableW>
+
+				<Button
+					css={{
+						marginTop: 20,
+						padding: "14px 6px",
+						border: "1px solid #aaa",
+						backgroundColor: "#888",
+						borderRadius: 3,
+					}}
+					handler={() => setAssigned({})}
+				>
+					Reset Assignments
+				</Button>
+			</div>
 		</div>
 	)
 }
