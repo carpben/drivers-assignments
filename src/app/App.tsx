@@ -88,7 +88,6 @@ const App: DRFC<Props> = () => {
 							<DriverRow
 								{...driver}
 								select={() => {
-									console.log("hhh")
 									setSelection((draftSt) => {
 										draftSt.driver = driver.id
 									})

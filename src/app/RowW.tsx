@@ -17,7 +17,6 @@ export enum ROW_STYLE_MODE {
 
 const RowW: DRFC<Props> = (props) => {
 	const { handler, styleMode, justChanged, hoverable, ...otherProps } = props
-	console.log(handler)
 	const justChangedDecoration = justChanged && styleMode !== ROW_STYLE_MODE.HEIGHLIGHT
 
 	return (
