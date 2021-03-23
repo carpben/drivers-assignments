@@ -1,33 +1,25 @@
 /** @jsxImportSource @emotion/react */
-import { faCheck, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons"
+import { css } from "@emotion/react"
+import { faCheck, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
-import { Button } from "../general/Button"
 import { stopAllPropagation } from "../general/dom"
 import { useUpdateEffect } from "../general/lifecycles"
 import { styleCenterSingleChild } from "../general/style"
 import { DRFC } from "../general/types"
-import { driversMap } from "./data/driversMap"
 import RowW, { ROW_STYLE_MODE } from "./RowW"
+import TaskRowTemplate from "./TaskRowTemplate"
 
 interface Props {
 	driver?: string
 	taskId: string
 	subTasks: string[]
-	handler?: () => unknown
+	handler: () => unknown
 	styleMode?: ROW_STYLE_MODE
-	mode: TASK_ROW_MODE
+	rowClickable: boolean
 }
 
-export enum TASK_ROW_MODE {
-	HEADER,
-	ROW_CLICKABLE,
-	NONE,
-}
-
-const TaskRow: DRFC<Props> = (props) => {
-	const { driver, taskId, subTasks, mode, handler, ...otherProps } = props
-
+const useJustChanged = (driver?: string) => {
 	const [justChanged, setJustChnaged] = useState(false)
 
 	useUpdateEffect(() => {
@@ -35,102 +27,62 @@ const TaskRow: DRFC<Props> = (props) => {
 		setTimeout(() => setJustChnaged(false), 900)
 	}, [driver])
 
-	const driverTxt = driver || "Driver"
+	return justChanged
+}
 
-	const firstElement = (
-		<div
-			css={[
-				{
-					display: "flex",
-					color: driver ? "unset" : "#777",
-					fontWeight: driver ? "unset" : 600,
-					alignItems: "center",
-				},
-			]}
-		>
-			<div
-				css={[
-					{
-						width: 30,
-					},
-					styleCenterSingleChild,
-				]}
-			>
-				{mode !== TASK_ROW_MODE.HEADER && (
-					<FontAwesomeIcon
-						icon={driver ? faCheck : faPlus}
-						css={{
-							color: driver ? "green" : "#777",
-						}}
-					/>
-				)}
-			</div>
+const TaskRow: DRFC<Props> = (props) => {
+	const { driver, taskId, subTasks, rowClickable, handler, ...otherProps } = props
 
-			<div
-				css={{
-					marginLeft: 20,
-				}}
-			>
-				{driverTxt}
-			</div>
-		</div>
-	)
+	const justChanged = useJustChanged(driver)
 
 	return (
-		<RowW
-			handler={mode === TASK_ROW_MODE.ROW_CLICKABLE ? handler : undefined}
+		<TaskRowTemplate
+			driver={
+				<div
+					css={[styleRowW, driver ? undefined : styleRowClickable]}
+					onClick={
+						driver
+							? undefined
+							: (e) => {
+									stopAllPropagation(e)
+									handler!()
+							  }
+					}
+				>
+					<div
+						css={[
+							{
+								width: 30,
+								color: driver ? "green" : "#777",
+							},
+							styleCenterSingleChild,
+						]}
+					>
+						<FontAwesomeIcon icon={driver ? faCheck : faPlus} />
+					</div>
+
+					<div css={{ marginLeft: 20 }}>{driver || "Driver"}</div>
+				</div>
+			}
+			taskId={taskId}
+			subTasks={subTasks}
+			handler={rowClickable ? handler : undefined}
 			{...otherProps}
 			justChanged={justChanged}
-		>
-			<div
-				css={{
-					display: "flex",
-				}}
-			>
-				<div
-					css={{
-						flexBasis: "25%",
-						flexShrink: 0,
-					}}
-				>
-					{driver ? (
-						firstElement
-					) : (
-						<div // Not using a button not to create style inconsistencies betweein the rows.
-							onClick={(e) => {
-								stopAllPropagation(e)
-								handler!()
-							}}
-							css={{
-								cursor: "pointer",
-								width: "min-content",
-							}}
-						>
-							{firstElement}
-						</div>
-					)}
-				</div>
-				<div
-					css={{
-						flexBasis: "10%",
-						flexShrink: 0,
-					}}
-				>
-					{taskId}
-				</div>
-				{subTasks.map((sub, i) => (
-					<div
-						css={{
-							flexBasis: "10%",
-						}}
-						key={i} // Rare case of static list. In dynamic lists index mustn't be used for key
-					>
-						{sub}
-					</div>
-				))}
-			</div>
-		</RowW>
+		/>
 	)
 }
+
+const styleRowW = css({
+	display: "flex",
+	alignItems: "center",
+})
+
+const styleRowClickable = css({
+	cursor: "pointer",
+	width: "min-content",
+	color: "#777",
+	fontWeight: 600,
+})
 
 export default TaskRow

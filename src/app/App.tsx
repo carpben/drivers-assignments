@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react"
-import { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useImmer } from "use-immer"
 import { getArr } from "../general/array"
 import { Button } from "../general/Button"
@@ -13,7 +13,8 @@ import tasks from "./data/ops-Exercise-tasks.json"
 import DriverRow from "./DriverRow"
 import RowW, { ROW_STYLE_MODE } from "./RowW"
 import TableW from "./TableW"
-import TaskRow, { TASK_ROW_MODE } from "./TaskRow"
+import TaskRow from "./TaskRow"
+import TaskRowTemplate from "./TaskRowTemplate"
 
 interface Props {}
 
@@ -22,8 +23,8 @@ const initialSelection = {
 	task: undefined as string | undefined,
 }
 
-const App: DRFC<Props> = () => {
-	const [assigned, setAssigned] = useImmer(null as null | Record<string, string>)
+const useDriverAssignments = () => {
+	const [assigned, setAssigned] = useState(null as null | Record<string, string>)
 	const [selection, setSelection] = useImmer(initialSelection)
 
 	useEffect(() => {
@@ -49,6 +50,17 @@ const App: DRFC<Props> = () => {
 		})
 	})
 
+	return {
+		setSelection,
+		reset: () => assignedLiveData.set({}),
+		assigned,
+		selection,
+	}
+}
+
+const App: DRFC<Props> = () => {
+	const { assigned, selection, setSelection, reset } = useDriverAssignments()
+
 	if (!assigned) {
 		return null
 	}
@@ -65,18 +77,15 @@ const App: DRFC<Props> = () => {
 
 				{drivers.map((driver) => {
 					const selected = driver.id === selection.driver
+					const selectDriver = () =>
+						setSelection((draftSt) => {
+							draftSt.driver = driver.id
+						})
 
 					return (
 						<RowW
 							key={driver.id}
-							handler={
-								driversHeighlighted
-									? () =>
-											setSelection((draftSt) => {
-												draftSt.driver = driver.id
-											})
-									: undefined
-							}
+							handler={driversHeighlighted ? selectDriver : undefined}
 							styleMode={
 								selected
 									? ROW_STYLE_MODE.HEIGHLIGHT
@@ -85,14 +94,7 @@ const App: DRFC<Props> = () => {
 									: undefined
 							}
 						>
-							<DriverRow
-								{...driver}
-								select={() => {
-									setSelection((draftSt) => {
-										draftSt.driver = driver.id
-									})
-								}}
-							/>
+							<DriverRow {...driver} select={selectDriver} />
 						</RowW>
 					)
 				})}
@@ -100,12 +102,11 @@ const App: DRFC<Props> = () => {
 
 			<div css={styleTasksSection}>
 				<TableW heighlight={tasksHeighlighted}>
-					<TaskRow
+					<TaskRowTemplate
 						driver="Driver"
 						taskId="TaskId"
 						subTasks={getArr(7, (i) => `Day ${i + 1}`)}
 						css={styleTableHeader}
-						mode={TASK_ROW_MODE.HEADER}
 					/>
 
 					{tasks.map((task) => {
@@ -129,13 +130,13 @@ const App: DRFC<Props> = () => {
 								driver={driversMap[assigned[task.lineId]]?.name}
 								taskId={task.lineDisplayId}
 								subTasks={task.tasks.map((subTask) => subTask.type)}
-								mode={tasksHeighlighted ? TASK_ROW_MODE.ROW_CLICKABLE : TASK_ROW_MODE.NONE}
+								rowClickable={tasksHeighlighted}
 							/>
 						)
 					})}
 				</TableW>
 
-				<Button css={styleResetButton} handler={() => assignedLiveData.set({})}>
+				<Button css={styleResetButton} handler={reset}>
 					Reset Assignments
 				</Button>
 			</div>

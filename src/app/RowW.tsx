@@ -1,12 +1,14 @@
 /** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import { stopAllPropagation } from "../general/dom"
 import { getShadow } from "../general/style"
 import { DRFC } from "../general/types"
 
 interface Props {
 	handler?: () => unknown
-	styleMode?: ROW_STYLE_MODE
 	justChanged?: boolean
+	styleMode?: ROW_STYLE_MODE
+
 	hoverable?: boolean
 }
 
@@ -22,9 +24,8 @@ const RowW: DRFC<Props> = (props) => {
 	return (
 		<div
 			css={[
+				styleW,
 				{
-					padding: "5px 15px",
-					borderTop: `1px solid #ddd`,
 					cursor: handler ? "pointer" : "unset",
 					":hover": {
 						backgroundColor: justChangedDecoration ? "blue" : "white",
@@ -32,25 +33,12 @@ const RowW: DRFC<Props> = (props) => {
 				},
 
 				styleMode === ROW_STYLE_MODE.HEIGHLIGHT
-					? [
-							getShadow(2, 1),
-							{
-								backgroundColor: "white",
-								borderRadius: 3,
-							},
-					  ]
+					? styleHeighlight
 					: styleMode === ROW_STYLE_MODE.BLUR
-					? {
-							filter: "blur(5px)",
-					  }
+					? { filter: "blur(5px)" }
 					: undefined,
 
-				justChangedDecoration
-					? {
-							backgroundColor: "blue",
-							color: "white",
-					  }
-					: undefined,
+				justChangedDecoration ? styleJustChanged : undefined,
 			]}
 			{...otherProps}
 			onClick={
@@ -64,5 +52,23 @@ const RowW: DRFC<Props> = (props) => {
 		/>
 	)
 }
+
+const styleW = css({
+	padding: "5px 15px",
+	borderTop: `1px solid #ddd`,
+})
+
+const styleHeighlight = css([
+	getShadow(2, 1),
+	{
+		backgroundColor: "white",
+		borderRadius: 3,
+	},
+])
+
+const styleJustChanged = css({
+	backgroundColor: "blue",
+	color: "white",
+})
 
 export default RowW
